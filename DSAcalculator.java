@@ -1,7 +1,6 @@
-package comb;
 import java.util.*;
 
-public class DSAcalculator{
+public class DSAcalculator {
 
     static class InvalidExpressionException extends Exception {
         public InvalidExpressionException(String message) {
@@ -20,21 +19,21 @@ public class DSAcalculator{
                 try {
                     System.out.print("\nEnter a mathematical expression (or type 'exit' to quit): ");
                     String expr = sc.nextLine();
-                    
+
                     if (expr.equalsIgnoreCase("exit") || expr.equalsIgnoreCase("quit")) {
                         System.out.println("Thank you for using the calculator. Goodbye!");
                         sc.close();
-                        return; // Terminate the main method.
+                        return;
                     }
-                    
+
                     tokens = tokenizeExpression(expr, evenNumbers, oddNumbers);
                 } catch (InvalidExpressionException e) {
                     System.out.println("Error: " + e.getMessage() + ". Please try again.");
                 }
             }
-            
+
             boolean representationChosen = false;
-            while(!representationChosen) {
+            while (!representationChosen) {
                 System.out.println("\nExpression is valid. What would you like to do?");
                 System.out.println("1. Represent as a LinkedList (with link format)");
                 System.out.println("2. Represent as a Queue (with separated queues)");
@@ -42,10 +41,10 @@ public class DSAcalculator{
                 System.out.println("4. Enter a new expression");
                 System.out.println("5. Quit");
                 System.out.print("Enter your choice (1-5): ");
-                
+
                 try {
                     int mode = sc.nextInt();
-                    sc.nextLine(); 
+                    sc.nextLine();
 
                     switch (mode) {
                         case 1:
@@ -56,31 +55,31 @@ public class DSAcalculator{
                             int inCap = sc.nextInt();
                             System.out.print("Enter capacity for even/odd queues: ");
                             int eoCap = sc.nextInt();
-                            sc.nextLine(); // Consume newline
+                            sc.nextLine();
                             handleQueueMode(tokens, evenNumbers, oddNumbers, inCap, eoCap);
                             break;
                         case 3:
                             handleArrayListMode(tokens, evenNumbers, oddNumbers);
                             break;
                         case 4:
-                            representationChosen = true; // Breaks the inner loop to get a new expression.
+                            representationChosen = true;
                             break;
                         case 5:
                             System.out.println("Exiting the calculator.");
                             sc.close();
-                            return; // Exit the program entirely.
+                            return;
                         default:
                             System.out.println("Invalid choice. Please select 1-5.");
                     }
                     if (mode >= 1 && mode <= 3) {
-                           System.out.println("----------------------------------------");
+                        System.out.println("----------------------------------------");
                     }
                 } catch (InputMismatchException e) {
                     System.out.println("Invalid input. Please enter a number.");
-                    sc.nextLine(); // Clear the invalid input
+                    sc.nextLine();
                 } catch (InvalidExpressionException | ArithmeticException e) {
                     System.out.println("Calculation Error: " + e.getMessage());
-                    representationChosen = true; // Force re-entry of expression on calculation error.
+                    representationChosen = true;
                 }
             }
         }
@@ -98,20 +97,18 @@ public class DSAcalculator{
     private static void handleLinkedListMode(List<Object> tokens, List<Double> even, List<Double> odd) throws InvalidExpressionException, ArithmeticException {
         LinkedList<Object> expressionList = new LinkedList<>(tokens);
         double result = evaluate(expressionList);
-        
-        System.out.println(); // For spacing
         printAsLinks(expressionList, "Representation");
         System.out.println("Result: " + result);
         printAsLinks(new ArrayList<>(even), "Even Numbers");
         printAsLinks(new ArrayList<>(odd), "Odd Numbers");
     }
-    
+
     private static void handleQueueMode(List<Object> tokens, List<Double> evenNumbers, List<Double> oddNumbers, int inCap, int eoCap) throws InvalidExpressionException, ArithmeticException {
         Queue<Object> expressionQueue = new LinkedList<>(tokens);
         LinkedList<Queue<Double>> inputQueues = new LinkedList<>();
         LinkedList<Queue<Double>> evenQueues = new LinkedList<>();
         LinkedList<Queue<Double>> oddQueues = new LinkedList<>();
-        
+
         for (Object token : tokens) {
             if (token instanceof Double) {
                 addToQueueList(inputQueues, (Double) token, inCap);
@@ -132,10 +129,9 @@ public class DSAcalculator{
     }
 
     private static List<Object> tokenizeExpression(String expr, Collection<Double> even, Collection<Double> odd) throws InvalidExpressionException {
-        expr = expr.replaceAll("\\s+", ""); // Remove all whitespace
-        // Insert '*' for implicit multiplication: number( or )(
+        expr = expr.replaceAll("\\s+", "");
         expr = expr.replaceAll("(?<=\\d|\\))\\(", "*(");
-        
+
         List<Object> tokens = new ArrayList<>();
         int balance = 0;
         even.clear();
@@ -149,12 +145,12 @@ public class DSAcalculator{
                 while (i < expr.length() && (Character.isDigit(expr.charAt(i)) || expr.charAt(i) == '.')) {
                     sb.append(expr.charAt(i++));
                 }
-                i--; // Adjust index after reading the full number
+                i--;
 
                 try {
                     double num = Double.parseDouble(sb.toString());
                     tokens.add(num);
-                    if (num % 1 == 0) { // Check if it's an integer
+                    if (num % 1 == 0) {
                         if ((int) num % 2 == 0) even.add(num);
                         else odd.add(num);
                     }
@@ -193,7 +189,7 @@ public class DSAcalculator{
                     if (ops.isEmpty()) throw new InvalidExpressionException("Mismatched parentheses");
                     ops.pop();
                 } else {
-                    if (op == '-' && (lastToken == null || (lastToken instanceof Character && "*/+(".indexOf((char)lastToken) != -1))) {
+                    if (op == '-' && (lastToken == null || (lastToken instanceof Character && "*/+(".indexOf((char) lastToken) != -1))) {
                         values.push(0.0);
                     }
                     while (!ops.isEmpty() && ops.peek() != '(' && precedence(ops.peek()) >= precedence(op)) {
@@ -231,13 +227,17 @@ public class DSAcalculator{
 
     private static double applyOperation(double a, double b, char op) throws ArithmeticException {
         switch (op) {
-            case '+': return a + b;
-            case '-': return a - b;
-            case '*': return a * b;
+            case '+':
+                return a + b;
+            case '-':
+                return a - b;
+            case '*':
+                return a * b;
             case '/':
                 if (b == 0) throw new ArithmeticException("Division by zero");
                 return a / b;
-            default: throw new IllegalArgumentException("Invalid operator: " + op);
+            default:
+                throw new IllegalArgumentException("Invalid operator: " + op);
         }
     }
 
@@ -250,15 +250,15 @@ public class DSAcalculator{
 
     private static void printQueueList(LinkedList<Queue<Double>> queues) {
         if (queues.isEmpty()) {
-               System.out.println("   [None]");
-               return;
+            System.out.println("   [None]");
+            return;
         }
         int i = 1;
         for (Queue<Double> q : queues) {
             System.out.println("   Queue " + (i++) + ": " + q);
         }
     }
-    
+
     private static void printAsLinks(Collection<?> collection, String label) {
         System.out.print(label + ": ");
         for (Object item : collection) {
