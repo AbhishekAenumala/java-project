@@ -10,8 +10,8 @@ public class CRUDoperations{
     public static void main(String[] args) {
         
         String url = "jdbc:oracle:thin:@localhost:1521:xe";
-        String username = "system";
-        String password = "Abhi_2004";
+        String username = //your username;
+        String password = //your password;
        
             
             while(flag)
